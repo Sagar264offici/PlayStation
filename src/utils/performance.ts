@@ -14,7 +14,7 @@ export interface QualityTier {
   particles: number;
   /** Enable the soft contact shadow under the hardware. */
   contactShadow: boolean;
-  /** Reflection resolution for the studio floor. */
+  /** Reflection strength for the studio floor. 0 swaps in a flat material. */
   floorReflectivity: number;
   /** Enable the volumetric haze cone. */
   haze: boolean;
@@ -22,10 +22,47 @@ export interface QualityTier {
   bounceLights: boolean;
 }
 
+/**
+ * Reads the GPU string once and caches it.
+ *
+ * Cores and RAM say nothing useful about fill rate, which is what actually
+ * decides this budget: the studio floor re-renders the scene into an offscreen
+ * target every frame, so the cost is dominated by pixels and blend passes
+ * rather than by geometry. An 8-core laptop with integrated graphics looks
+ * identical to a desktop with a discrete card on core count alone, and gets
+ * handed the 1024 reflection buffer, which is the single most expensive thing
+ * in the scene.
+ */
+let gpuClass: 'weak' | 'integrated' | 'discrete' | null = null;
+
+function readGPU(): 'weak' | 'integrated' | 'discrete' {
+  if (gpuClass) return gpuClass;
+  gpuClass = 'integrated';
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl');
+    if (!gl) return (gpuClass = 'weak');
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    if (!ext) return (gpuClass = 'integrated');
+    const renderer = String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) ?? '').toLowerCase();
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+
+    // Software rasterisers. `detectWebGL` already sends these to the static
+    // composition, but this runs before/independently of that in some paths.
+    if (/swiftshader|llvmpipe|software|mesa offscreen|basic render/.test(renderer))
+      return (gpuClass = 'weak');
+    if (/apple m[1-9]|rtx|radeon rx|geforce (gtx )?(9|1[0-9])|arc a7/.test(renderer))
+      return (gpuClass = 'discrete');
+    return (gpuClass = 'integrated');
+  } catch {
+    return (gpuClass = 'integrated');
+  }
+}
+
 const TIERS: Record<QualityTier['name'], QualityTier> = {
   low: {
     name: 'low',
-    dpr: [1, 1.25],
+    dpr: [1, 1],
     particles: 420,
     contactShadow: false,
     floorReflectivity: 0.32,
@@ -34,7 +71,7 @@ const TIERS: Record<QualityTier['name'], QualityTier> = {
   },
   medium: {
     name: 'medium',
-    dpr: [1, 1.6],
+    dpr: [1, 1.35],
     particles: 1100,
     contactShadow: true,
     floorReflectivity: 0.5,
@@ -43,7 +80,10 @@ const TIERS: Record<QualityTier['name'], QualityTier> = {
   },
   high: {
     name: 'high',
-    dpr: [1, 2],
+    // 1.5 rather than 2. At dpr 2 a 1440-wide window shades 5.2M pixels per
+    // frame through four `MeshPhysicalMaterial` lobes; at 1.5 it is 2.9M, and
+    // the difference is not visible on a blurred, tone-mapped image.
+    dpr: [1, 1.5],
     particles: 2200,
     contactShadow: true,
     floorReflectivity: 0.62,
@@ -59,11 +99,12 @@ export function getQualityTier(): QualityTier {
   const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4;
   const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false;
   const narrow = window.innerWidth < 760;
+  const gpu = readGPU();
 
   // Phones and low-core machines start low and are allowed to climb if the
   // measured frame time turns out fine (see `watchFrameBudget`).
-  if (coarse || narrow || cores <= 4 || memory <= 4) return TIERS.low;
-  if (cores >= 8 && memory >= 8) return TIERS.high;
+  if (gpu === 'weak' || coarse || narrow || cores <= 4 || memory <= 4) return TIERS.low;
+  if (gpu === 'discrete' && cores >= 8 && memory >= 8) return TIERS.high;
   return TIERS.medium;
 }
 

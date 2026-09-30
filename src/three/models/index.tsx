@@ -15,7 +15,7 @@ import { clamp, damp } from '@/state/stage';
  * to the asset's real-world height, so callers can position it like a real
  * object on a floor rather than guessing at offsets.
  */
-function useModel(asset: ModelAsset, onReady?: () => void) {
+function useModel(asset: ModelAsset, onReady?: () => void, castsShadow = false) {
   /*
    * The supplied FBX files carry Blender's texture *references* — filenames
    * like `PS5_Console_Color.png` that were never published alongside the
@@ -44,8 +44,18 @@ function useModel(asset: ModelAsset, onReady?: () => void) {
     // never fight over the same materials.
     const clone = fbx.clone(true);
     const materials = applyModelMaterials(clone, asset, kit);
+    if (castsShadow) {
+      // The shadow pass re-draws every casting triangle into a 1024 depth
+      // target each frame, so the scene's 256k triangles were effectively
+      // doubled to 513k. The controller alone is 211k of that for a shadow
+      // that lands on a floor nobody looks at directly, so only the console
+      // opts in.
+      clone.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) (child as THREE.Mesh).castShadow = true;
+      });
+    }
     return { root: clone, materials };
-  }, [fbx, asset, kit]);
+  }, [fbx, asset, kit, castsShadow]);
 
   useEffect(() => {
     configureMaps(kit as unknown as Record<string, THREE.Texture | null>);
@@ -108,7 +118,7 @@ interface ConsoleModelProps {
  * still, and the light bars pulse with the timeline's LED intensity.
  */
 export function ConsoleModel({ asset, onReady }: ConsoleModelProps) {
-  const { root, ledMaterials, metrics } = useModel(asset, onReady);
+  const { root, ledMaterials, metrics } = useModel(asset, onReady, true);
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const { clock } = useThree();
