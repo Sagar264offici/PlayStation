@@ -121,6 +121,22 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
     return tl;
   }, [onComplete, reduced]);
 
+  /**
+   * Skip straight to the handoff.
+   *
+   * Separate from `bloomToScene` so the sting is stopped immediately rather
+   * than left playing under the reveal, and so the skip cannot be re-entered
+   * once the sequence has taken over.
+   */
+  const finishNow = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+    }
+    bloomToScene();
+  }, [bloomToScene]);
+
   /* ---------------------------------------------------------------------- */
   /* Video playback                                                          */
   /* ---------------------------------------------------------------------- */
@@ -186,7 +202,11 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
 
     // A video that never fires `ended` (autoplay blocked, decode stall) must
     // not trap the user on the boot screen. Cap it by wall clock.
-    const failsafe = window.setTimeout(finish, 26_000);
+    //
+    // The sting is 8.5s, so anything past ~14s means it is stalling rather
+    // than playing, and the 26s this used to allow left the visitor staring at
+    // a black screen for the best part of half a minute.
+    const failsafe = window.setTimeout(finish, 14_000);
 
     video.addEventListener('ended', onEnded);
     video.addEventListener('error', onError);
@@ -316,6 +336,15 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
         <p className="boot__notice" role="status">
           Opening sting unavailable — continuing to the studio.
         </p>
+      ) : null}
+
+      {/* Skip. The sting plus the bloom is ~13s of near-black, which reads as a
+          freeze to anyone who just tapped "enter". This is the escape hatch:
+          the sting is an overture, not the content. */}
+      {phase === 'dark' || phase === 'video' ? (
+        <button type="button" className="boot__skip" onClick={finishNow}>
+          Skip intro
+        </button>
       ) : null}
     </div>
   );

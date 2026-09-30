@@ -1053,6 +1053,44 @@
   white-space: nowrap;
 }
 
+/* The escape hatch out of the sting. Sits bottom-right, deliberately quiet:
+   present if wanted, never competing with the blue point of light. */
+.boot__skip {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(2rem, 8vh, 5rem);
+  z-index: 7;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  background: rgba(6, 8, 12, 0.72);
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.boot__skip:hover,
+.boot__skip:focus-visible {
+  color: rgb(var(--color-text));
+  border-color: rgb(var(--color-line));
+  background: rgba(6, 8, 12, 0.9);
+}
+
+/* Touch devices get a target that meets the minimum comfortable size. */
+@media (pointer: coarse) {
+  .boot__skip {
+    padding: 0.85rem 1.4rem;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Video surface
    -------------------------------------------------------------------------- */
