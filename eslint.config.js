@@ -6,7 +6,17 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'public', 'node_modules', 'scripts'],
+    ignores: [
+      'dist',
+      'public',
+      'node_modules',
+      'scripts',
+      // `vercel build` writes a full copy of the production build here. It is
+      // generated, gitignored, and would otherwise contribute thousands of
+      // errors from minified bundles on every lint run.
+      '.vercel',
+      '.vercel/**',
+    ],
   },
 
   js.configs.recommended,
