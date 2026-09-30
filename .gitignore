@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Supplied source asset tree (~120MB of FBX/OBJ/STL/PNG plus their renders).
+# These are inputs, not source code, and are far past the size where committing
+# them is sensible. `npm run assets` reads from here to populate public/assets.
+#
+# This tree is macOS-only to process: prepare-assets.sh shells out to `sips` and
+# `cwebp`, which are Apple binaries. The optimised output below is what ships.
+#
+# The leading slash is load-bearing. An unanchored `assets/` also matches
+# `public/assets/`, which is the runtime payload the deployment needs — ignoring
+# it produces a site that builds cleanly and then has no models and no video.
+/assets/
+
+# NOTE: public/assets/ is deliberately NOT ignored, unlike the source tree
+# above. It is generated locally (the pipeline cannot run on Vercel's Linux
+# builders) and is therefore the only copy that reaches the deployment, so it
+# has to live in version control. It is ~23MB, dominated by the 13MB intro
+# sting. Regenerate with `npm run assets` after changing the source assets.
+
+# Local agent tooling, not part of the project
+.agents/
+skills-lock.json
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env
+.env
+.env.local
+.env.*.local

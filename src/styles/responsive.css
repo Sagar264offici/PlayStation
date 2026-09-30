@@ -1,0 +1,617 @@
+/* ==========================================================================
+   RESPONSIVE — a real mobile composition, not a shrunken desktop
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Large desktop — give the type room
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 1800px) {
+  :root {
+    --max-w: 1720px;
+    --gutter: 6rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Laptop — tighten the type scale before anything reflows
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1280px) {
+  :root {
+    --fs-display-xl: clamp(3rem, 9.5vw, 8rem);
+    --fs-display-l: clamp(2.5rem, 7vw, 5.5rem);
+    --fs-display-m: clamp(2rem, 5vw, 4rem);
+  }
+
+  .hero__grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.5fr);
+  }
+
+  .control__features {
+    width: min(28ch, 30vw);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tablet
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  :root {
+    --nav-h: 56px;
+    --space-7: 7rem;
+    --space-8: 10rem;
+  }
+
+  /* The nav collapses to the burger. */
+  .nav__nav {
+    display: none;
+  }
+
+  .nav__inner {
+    grid-template-columns: auto 1fr;
+  }
+
+  .nav__aside {
+    grid-column: 2;
+  }
+
+  /* Hero: type above, hardware below. The rail becomes a horizontal strip. */
+  .hero {
+    min-height: 100svh;
+    justify-content: flex-end;
+    padding-bottom: clamp(5rem, 14vh, 8rem);
+  }
+
+  .hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-4);
+  }
+
+  .hero__content {
+    max-width: 100%;
+  }
+
+  .hero__rail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.5rem;
+  }
+
+  .hero__rail-row:nth-child(-n + 2) {
+    border-top: 1px solid var(--line-faint);
+  }
+
+  /* Games: stack the cinema over its metadata. */
+  .games__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .games__side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  /* Discovery: the feature card stacks. */
+  .feature-card__link {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .feature-card__media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .feature-card__scrim {
+    background: linear-gradient(to top, rgba(4, 6, 10, 0.92), transparent 60%);
+  }
+
+  .discovery__cell--wide,
+  .discovery__cell--tall {
+    grid-column: span 6;
+  }
+
+  /* Community. */
+  .community__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .community__pillars {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Phone — the real mobile composition
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  :root {
+    --gutter: 1.25rem;
+    --fs-display-xl: clamp(2.75rem, 14vw, 5.25rem);
+    --fs-display-l: clamp(2.25rem, 11vw, 4rem);
+    --fs-display-m: clamp(1.875rem, 8.5vw, 3rem);
+    --fs-display-s: clamp(1.5rem, 6.5vw, 2.25rem);
+    --fs-body-l: 1rem;
+    --space-6: 4.5rem;
+    --space-7: 6rem;
+  }
+
+  /* The left hairline is desktop furniture; on a phone it just crowds. */
+  .section__inner::before {
+    display: none;
+  }
+
+  .section {
+    padding-block: clamp(4rem, 12vh, 7rem);
+  }
+
+  /* --- hero ------------------------------------------------------------- */
+
+  .hero {
+    min-height: 100svh;
+    padding-top: calc(var(--nav-h) + var(--space-4));
+    /* Sit the copy in the lower third so the hardware has the upper frame. */
+    justify-content: flex-end;
+    padding-bottom: clamp(4.5rem, 12vh, 6rem);
+  }
+
+  .hero__title {
+    line-height: 0.88;
+    /* The outline weight is doubled up slightly on small screens because a 1px
+       stroke disappears at phone DPI. */
+    letter-spacing: -0.05em;
+  }
+
+  .hero__line--accent > span {
+    -webkit-text-stroke-width: 1px;
+  }
+
+  .hero__body {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__actions .btn {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .hero__rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1rem;
+  }
+
+  .hero__rail dd {
+    font-size: 0.8125rem;
+  }
+
+  .hero__scroll {
+    left: var(--gutter);
+    bottom: 1.25rem;
+  }
+
+  .hero__scroll-track {
+    height: 28px;
+  }
+
+  /* --- hardware --------------------------------------------------------- */
+
+  .section--hardware {
+    min-height: 260vh;
+  }
+
+  .hardware__inner {
+    /* On a phone the header cannot sit beside the hardware, so it takes the top
+       band and the annotations get more of the frame. */
+    align-items: flex-start;
+    padding-top: calc(var(--nav-h) + var(--space-4));
+    padding-bottom: var(--space-4);
+  }
+
+  .hardware__header,
+  .hardware__specs,
+  .chapter__inner {
+    margin-left: 0;
+  }
+
+  .hardware__intro {
+    font-size: 0.9375rem;
+  }
+
+  /* The 3D annotation layer is dropped on phones: there is no room for a leader
+     line and a label to coexist legibly, and the spec list below carries the
+     same information in a form that actually works at this width. */
+  .hardware__annotations,
+  .control__annotations {
+    display: none;
+  }
+
+  .hardware__copy {
+    margin-top: 0;
+    padding-block: var(--space-5) var(--space-6);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .spec__label {
+    font-size: 1.0625rem;
+  }
+
+  .spec__detail {
+    font-size: 0.875rem;
+  }
+
+  .hardware__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .fact__value {
+    font-size: 1.375rem;
+  }
+
+  .fact__label {
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+  }
+
+  /* --- chapters --------------------------------------------------------- */
+
+  .section--performance,
+  .section--immersion {
+    min-height: 110vh;
+  }
+
+  .chapter__inner--narrow {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .chapter__index {
+    font-size: 3.5rem;
+  }
+
+  .chapter__body {
+    font-size: 0.9375rem;
+  }
+
+  .chapter__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* --- control ---------------------------------------------------------- */
+
+  .section--control {
+    min-height: 220vh;
+  }
+
+  .control__inner {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: calc(var(--nav-h) + var(--space-4));
+  }
+
+  /* The features move out of the absolute side column into normal flow. */
+  .control__features {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: var(--space-4);
+  }
+
+  .control-feature__detail {
+    font-size: 0.8125rem;
+  }
+
+  /* --- games ------------------------------------------------------------ */
+
+  .games__side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .games__name {
+    font-size: 1.75rem;
+  }
+
+  .video-surface {
+    /* A 16:9 stage on a narrow phone is only ~200px tall, which is too small
+       to read the metadata inside it. 4:3 gives the frame more height. */
+    aspect-ratio: 4 / 3;
+  }
+
+  .video-surface__controls {
+    padding: 0.85rem 0.85rem 1.1rem;
+  }
+
+  .video-surface__transport {
+    gap: 0.6rem;
+  }
+
+  .video-surface__time {
+    display: none;
+  }
+
+  .video-surface__placeholder-body {
+    font-size: 0.8125rem;
+  }
+
+  .games__note {
+    font-size: 0.75rem;
+  }
+
+  /* --- discovery -------------------------------------------------------- */
+
+  .discovery__cell--wide,
+  .discovery__cell--tall,
+  .discovery__cell--note {
+    grid-column: span 12;
+  }
+
+  .support-card__link {
+    flex-direction: row;
+  }
+
+  .support-card__media,
+  .discovery__cell--tall .support-card__media {
+    aspect-ratio: auto;
+    width: 38%;
+    flex: 0 0 38%;
+  }
+
+  .support-card__body {
+    padding: 1.1rem;
+  }
+
+  .support-card__title {
+    font-size: 1.25rem;
+  }
+
+  .support-card__description {
+    font-size: 0.8125rem;
+  }
+
+  .note-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    text-align: left;
+  }
+
+  /* --- community -------------------------------------------------------- */
+
+  .signal-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 1rem;
+  }
+
+  .signal-row__detail {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+
+  /* --- finale ----------------------------------------------------------- */
+
+  .section--finale {
+    min-height: 100svh;
+  }
+
+  .finale__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .finale__actions .btn {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Small phone
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  :root {
+    --gutter: 1rem;
+  }
+
+  .hero__eyebrow,
+  .section-label {
+    letter-spacing: 0.18em;
+  }
+
+  .hero__rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__rail-row:nth-child(2) {
+    border-top: 1px solid var(--line-faint);
+  }
+
+  .hardware__facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .fact {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line-faint);
+  }
+
+  .fact__label {
+    text-align: right;
+    max-width: 16ch;
+  }
+
+  .support-card__link {
+    flex-direction: column;
+  }
+
+  .support-card__media,
+  .discovery__cell--tall .support-card__media {
+    width: 100%;
+    flex: 1;
+    aspect-ratio: 16 / 9;
+  }
+
+  .chapter__stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .btn {
+    --btn-pad-x: 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  .nav__wordmark {
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+  }
+
+  .sound-toggle__label {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Landscape phone — the vertical scroll budget collapses
+   -------------------------------------------------------------------------- */
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: 100svh;
+    padding-block: calc(var(--nav-h) + var(--space-2)) var(--space-3);
+  }
+
+  .hero__rail {
+    display: none;
+  }
+
+  .hero__body {
+    display: none;
+  }
+
+  .section--hardware,
+  .section--control {
+    min-height: 200vh;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Coarse pointers — hover effects become tap-safe
+   -------------------------------------------------------------------------- */
+
+@media (hover: none) {
+  .tilt-card {
+    transform: none !important;
+  }
+
+  .tilt-card__body {
+    transform: none !important;
+  }
+
+  .tilt-card::after {
+    display: none;
+  }
+
+  /* No hover means no persistent "controls visible" state; the controls are
+     simply always available on a touch device. */
+  .video-surface__controls {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .feature-card:hover .feature-card__media img,
+  .support-card:hover .support-card__media img {
+    transform: none;
+  }
+
+  .support-card__action::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — keep every piece of content, drop the theatre
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .loader__dot,
+  .loader__enter-dots::after,
+  .boot__dust span,
+  .boot__glow,
+  .video-surface__scan,
+  .video-surface__loading span,
+  .hero__scroll-dot,
+  .signal-row__pulse {
+    animation: none !important;
+  }
+
+  .hero__scroll-dot {
+    top: 14px;
+    opacity: 1;
+  }
+
+  .video-surface__scan {
+    top: 50%;
+    opacity: 0.4;
+  }
+
+  .tilt-card,
+  .tilt-card__body {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .btn,
+  .btn__fill,
+  .nav__link,
+  .games__slot,
+  .games__slot-bar {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print — a readable document beats a canvas
+   -------------------------------------------------------------------------- */
+
+@media print {
+  .app__canvas,
+  .nav,
+  .nav-overlay,
+  .loader,
+  .boot,
+  .hero__scroll,
+  .video-surface__controls {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .section {
+    min-height: auto;
+    padding-block: 2rem;
+  }
+}

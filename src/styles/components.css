@@ -1,0 +1,1412 @@
+/* ==========================================================================
+   COMPONENTS — the reusable pieces
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Button
+   -------------------------------------------------------------------------- */
+
+.btn {
+  --btn-pad-y: 0.9rem;
+  --btn-pad-x: 1.5rem;
+  --btn-fs: var(--fs-small);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  font-size: var(--btn-fs);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: var(--r-sm);
+  isolation: isolate;
+  overflow: hidden;
+  /* Magnetic transform is written by JS; the transition only covers the
+     return, which is what should feel eased. */
+  transition:
+    transform 0.45s var(--ease-cinematic),
+    border-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out),
+    background-color 0.3s var(--ease-out);
+  will-change: transform;
+}
+
+.btn--sm {
+  --btn-pad-y: 0.6rem;
+  --btn-pad-x: 1rem;
+  --btn-fs: 0.6875rem;
+}
+.btn--lg {
+  --btn-pad-y: 1.15rem;
+  --btn-pad-x: 2rem;
+  --btn-fs: var(--fs-small);
+}
+.btn--full {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.btn__label {
+  position: relative;
+  z-index: 1;
+}
+
+.btn__fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translateY(101%);
+  transition: transform 0.5s var(--ease-cinematic);
+}
+
+.btn__trailing {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.4s var(--ease-cinematic);
+}
+
+.btn .arrow {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+/* --- primary -------------------------------------------------------------- */
+
+.btn--primary {
+  background: #fff;
+  color: #05060a;
+  border: 1px solid #fff;
+}
+
+.btn--primary .btn__fill {
+  background: var(--accent);
+}
+
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  color: #04070c;
+  border-color: var(--accent);
+}
+
+.btn--primary:hover .btn__fill,
+.btn--primary:focus-visible .btn__fill {
+  transform: translateY(0);
+}
+
+.btn--primary:hover .btn__trailing {
+  transform: translateX(3px);
+}
+
+.btn--primary:active {
+  transform: scale(0.975);
+}
+
+/* --- secondary ------------------------------------------------------------ */
+
+.btn--secondary {
+  background: transparent;
+  color: rgb(var(--color-text));
+  border: 1px solid var(--line-strong);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.btn--secondary .btn__fill {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn--secondary:hover,
+.btn--secondary:focus-visible {
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+.btn--secondary:hover .btn__fill,
+.btn--secondary:focus-visible .btn__fill {
+  transform: translateY(0);
+}
+
+.btn--secondary:hover .btn__trailing {
+  transform: translateX(3px);
+}
+
+.btn--secondary:active {
+  transform: scale(0.975);
+}
+
+/* --- ghost ---------------------------------------------------------------- */
+
+.btn--ghost {
+  background: transparent;
+  color: rgb(var(--color-text-dim));
+  border: 1px solid transparent;
+  padding-inline: 0.25rem;
+}
+
+.btn--ghost .btn__fill {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  color: #fff;
+}
+
+.btn--ghost:hover .btn__fill {
+  transform: translateY(0);
+}
+
+.btn--ghost:active {
+  transform: scale(0.985);
+}
+
+/* --- link variant --------------------------------------------------------- */
+
+.btn--link {
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Arrow
+   -------------------------------------------------------------------------- */
+
+.arrow {
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   Section label
+   -------------------------------------------------------------------------- */
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: var(--fs-label);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.section-label__index {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.section-label__rule {
+  width: clamp(28px, 5vw, 64px);
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.section-label__text {
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Readout
+   -------------------------------------------------------------------------- */
+
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--line-faint);
+}
+
+.readout__label {
+  font-size: var(--fs-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim-2, 120, 120, 125));
+}
+
+.readout__value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Line reveal
+   -------------------------------------------------------------------------- */
+
+.line-reveal {
+  display: block;
+}
+
+.line-reveal__mask {
+  display: block;
+  overflow: hidden;
+  /* A touch of bottom padding stops descenders being clipped by the mask. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.line-reveal__inner {
+  display: block;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Tilt card
+   -------------------------------------------------------------------------- */
+
+.tilt-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+  --spot-x: 50%;
+  --spot-y: 50%;
+
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 0.5s var(--ease-cinematic);
+}
+
+.tilt-card__body {
+  position: relative;
+  height: 100%;
+  transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
+  transition: transform 0.5s var(--ease-cinematic);
+}
+
+/* The travelling highlight. Barely there — enough to feel the surface respond. */
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--spot-x) var(--spot-y),
+    rgba(255, 255, 255, 0.07),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+  z-index: 3;
+}
+
+.tilt-card:hover::after {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Sound toggle
+   -------------------------------------------------------------------------- */
+
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+  transition: border-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+
+.sound-toggle:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  color: #fff;
+}
+
+.sound-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sound-toggle__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+}
+
+.sound-toggle__bars span {
+  width: 2px;
+  background: currentColor;
+  height: 40%;
+}
+
+.sound-toggle[data-on='true'] .sound-toggle__bars span {
+  animation: sound-bars 1.1s ease-in-out infinite;
+}
+.sound-toggle[data-on='true'] .sound-toggle__bars span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.sound-toggle[data-on='true'] .sound-toggle__bars span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes sound-bars {
+  0%,
+  100% {
+    height: 35%;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-toggle__bars span {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Navigation
+   -------------------------------------------------------------------------- */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.6s var(--ease-cinematic),
+    opacity 0.4s var(--ease-out);
+}
+
+.nav[data-visible='true'] {
+  pointer-events: auto;
+}
+
+.nav.is-hidden {
+  transform: translateY(-102%);
+}
+
+.nav__inner {
+  height: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  /* The floating bar itself: a dark translucent surface with a single hairline
+     beneath. No pill, no shadow, no blur radius games. */
+  background: linear-gradient(to bottom, rgba(6, 7, 10, 0.9), rgba(6, 7, 10, 0.62));
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border-bottom: 1px solid var(--line-faint);
+}
+
+/* --- mark ----------------------------------------------------------------- */
+
+.nav__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.nav__mark:hover {
+  opacity: 0.72;
+}
+
+.nav__monogram {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Two offset arcs — an abstract mark, deliberately not a play triangle. */
+.nav__monogram span {
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.nav__monogram span:last-child {
+  inset: 6px;
+  opacity: 0.45;
+  transform: translateY(-1.5px);
+}
+
+.nav__wordmark {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* --- list ----------------------------------------------------------------- */
+
+.nav__nav {
+  justify-self: center;
+}
+
+.nav__list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.6vw, 1.75rem);
+}
+
+.nav__indicator {
+  position: absolute;
+  left: 0;
+  bottom: -9px;
+  height: 1px;
+  width: 0;
+  background: var(--accent);
+  /* A soft glow, but only 1px tall — the restraint is what keeps it from
+     looking like a game UI. */
+  box-shadow: 0 0 8px rgba(var(--color-accent), 0.7);
+  pointer-events: none;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.4rem 0.15rem;
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+  transition: color 0.3s var(--ease-out);
+  white-space: nowrap;
+}
+
+.nav__link:hover {
+  color: #fff;
+}
+
+.nav__link[data-active='true'] {
+  color: #fff;
+}
+
+.nav__index {
+  font-size: 0.5625rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.nav__link[data-active='true'] .nav__index {
+  color: #fff;
+}
+
+/* --- aside ---------------------------------------------------------------- */
+
+.nav__aside {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  justify-self: end;
+}
+
+.nav__burger {
+  display: none;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+}
+
+.nav__burger-lines {
+  display: grid;
+  gap: 4px;
+  width: 14px;
+}
+
+.nav__burger-lines span {
+  height: 1px;
+  background: #fff;
+  transition: transform 0.4s var(--ease-cinematic);
+}
+
+.nav.is-open .nav__burger-lines span:first-child {
+  transform: translateY(2.5px) rotate(45deg);
+}
+.nav.is-open .nav__burger-lines span:last-child {
+  transform: translateY(-2.5px) rotate(-45deg);
+}
+
+/* --- overlay -------------------------------------------------------------- */
+
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: calc(var(--nav-h) + var(--space-5)) var(--gutter) var(--space-5);
+  background: linear-gradient(160deg, rgba(4, 5, 8, 0.97), rgba(2, 3, 5, 0.99));
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  animation: overlay-in 0.5s var(--ease-cinematic) both;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.nav-overlay__list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line-faint);
+}
+
+.nav-overlay__item {
+  border-bottom: 1px solid var(--line-faint);
+  animation: overlay-item 0.6s var(--ease-cinematic) both;
+  animation-delay: calc(0.06s * var(--i));
+}
+
+@keyframes overlay-item {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nav-overlay__link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: clamp(1.1rem, 3.5vw, 1.9rem) 0;
+}
+
+.nav-overlay__index {
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-overlay__label {
+  font-size: clamp(1.75rem, 8vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: rgb(var(--color-text-dim));
+  transition: color 0.35s var(--ease-out), transform 0.45s var(--ease-cinematic);
+}
+
+.nav-overlay__link[data-active='true'] .nav-overlay__label {
+  color: #fff;
+}
+
+.nav-overlay__link:hover .nav-overlay__label {
+  color: #fff;
+  transform: translateX(6px);
+}
+
+.nav-overlay__arrow {
+  width: 22px;
+  height: 22px;
+  color: rgb(var(--color-text-dim));
+  transition: transform 0.45s var(--ease-cinematic), color 0.3s var(--ease-out);
+}
+
+.nav-overlay__link:hover .nav-overlay__arrow {
+  transform: translateX(5px);
+  color: var(--accent);
+}
+
+.nav-overlay__foot {
+  max-width: 46ch;
+  font-size: var(--fs-label);
+  line-height: 1.7;
+  color: rgb(var(--color-text-dim-2, 120, 120, 125));
+}
+
+/* --------------------------------------------------------------------------
+   Loading screen
+   -------------------------------------------------------------------------- */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  place-items: center;
+  padding: var(--gutter);
+  background: #000;
+}
+
+/* Film grain. Very low opacity, and it does not animate — an animated grain
+   over a black screen reads as noise, not texture. */
+.loader__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.loader__content {
+  position: relative;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.loader__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--fs-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+}
+
+.loader__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulse-dot 1.9s var(--ease-in-out) infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loader__wordmark {
+  display: flex;
+  gap: 0.5em;
+  font-size: clamp(2rem, 7vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+}
+
+.loader__wordmark span:last-child {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.42);
+}
+
+.loader__bar {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: var(--space-2);
+  overflow: hidden;
+}
+
+.loader__bar-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.5), var(--accent));
+  will-change: transform;
+}
+
+.loader__meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.loader__count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.loader__count-value {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.loader__count-unit {
+  font-size: 0.75rem;
+  color: rgb(var(--color-text-dim));
+}
+
+.loader__phases {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: right;
+  flex: 1;
+  max-width: 190px;
+}
+
+.loader__phase {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim-2, 120, 120, 125));
+  transition: color 0.35s var(--ease-out);
+}
+
+.loader__phase.is-active {
+  color: rgb(var(--color-text-dim));
+}
+
+.loader__phase.is-done {
+  color: #fff;
+}
+
+.loader__phase-marker {
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+  transition: width 0.5s var(--ease-cinematic);
+}
+
+.loader__phase.is-done .loader__phase-marker {
+  width: 20px;
+  background: var(--accent);
+  opacity: 1;
+}
+
+.loader__enter {
+  margin-top: var(--space-2);
+  padding: 0.85rem 2rem;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim-2, 120, 120, 125));
+  opacity: 0.5;
+  pointer-events: none;
+  transition:
+    color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    opacity 0.4s var(--ease-out),
+    background-color 0.4s var(--ease-out);
+}
+
+.loader__enter.is-armed {
+  opacity: 1;
+  pointer-events: auto;
+  color: #fff;
+  border-color: var(--line-strong);
+}
+
+.loader__enter.is-armed:hover,
+.loader__enter.is-armed:focus-visible {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.loader__enter-dots::after {
+  content: '···';
+  letter-spacing: 0.1em;
+  animation: dots 1.4s steps(4) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '·';
+  }
+  50% {
+    content: '··';
+  }
+  75% {
+    content: '···';
+  }
+}
+
+.loader__disclaimer {
+  max-width: 52ch;
+  text-align: center;
+  font-size: 0.625rem;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.24);
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Boot sequence
+   -------------------------------------------------------------------------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  overflow: hidden;
+  background: #000;
+}
+
+/* 0. The black veil everything resolves out of. */
+.boot__veil {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 4;
+}
+
+/* 1. Almost-invisible motes. */
+.boot__dust span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: rgba(190, 220, 245, 0.5);
+  border-radius: 50%;
+  animation: boot-drift linear infinite;
+}
+
+@keyframes boot-drift {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  22% {
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+.boot__dust {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* 2. The blue point of light. Starts as a few pixels and becomes the studio's
+      key light. */
+.boot__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    rgba(var(--color-accent), 0.95) 22%,
+    rgba(var(--color-accent), 0.28) 52%,
+    transparent 72%
+  );
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+.boot__tracker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--color-accent), 0.28), transparent 68%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.boot[data-phase='video'] .boot__tracker,
+.boot[data-phase='bloom'] .boot__tracker {
+  opacity: 0;
+}
+
+/* 3. The supplied sting. Scaled past the frame edges so it reads as a lens
+      filling the screen rather than as a media element in a box. */
+.boot__video {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Just past 1 so the frame is always full-bleed, whatever the source aspect. */
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.boot__slate {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(2rem, 6vh, 4rem);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  animation: slate-in 1s var(--ease-cinematic) 0.6s both;
+}
+
+.boot__slate-index {
+  color: var(--accent);
+}
+
+.boot__slate-line,
+.boot__slate-label {
+  white-space: nowrap;
+}
+
+@keyframes slate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.boot__notice {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(2rem, 8vh, 5rem);
+  z-index: 6;
+  transform: translateX(-50%);
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  background: rgba(6, 8, 12, 0.8);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--color-text-dim));
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Video surface
+   -------------------------------------------------------------------------- */
+
+.video-surface {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #010203;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.video-surface__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #010203;
+}
+
+.video-surface__matte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7%;
+  background: #000;
+  z-index: 4;
+  pointer-events: none;
+}
+.video-surface__matte--top {
+  top: 0;
+}
+.video-surface__matte--bottom {
+  bottom: 0;
+}
+
+/* --- controls ------------------------------------------------------------- */
+
+.video-surface__controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  padding: 1.25rem 1.25rem 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.86), transparent);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-cinematic);
+  pointer-events: none;
+}
+
+.video-surface:hover .video-surface__controls,
+.video-surface:focus-within .video-surface__controls,
+.video-surface__controls[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.video-surface__transport {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.video-surface__play,
+.video-surface__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: #fff;
+  transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+
+.video-surface__play:hover,
+.video-surface__icon:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.video-surface__play svg,
+.video-surface__icon svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+.video-surface__icon svg {
+  fill: none;
+}
+
+.video-surface__scrub {
+  position: relative;
+  flex: 1;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.video-surface__scrub-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+
+.video-surface__scrub-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: var(--accent, var(--color-accent));
+  will-change: transform;
+}
+
+/* The range input is invisible and sits on top as the actual control. */
+.video-surface__range {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.video-surface__range::-webkit-slider-runnable-track {
+  height: 20px;
+  background: transparent;
+}
+.video-surface__range::-moz-range-track {
+  height: 20px;
+  background: transparent;
+}
+
+.video-surface__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  margin-top: 5.5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.video-surface__range::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.video-surface__scrub:hover .video-surface__range::-webkit-slider-thumb,
+.video-surface__range:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+}
+.video-surface__scrub:hover .video-surface__range::-moz-range-thumb,
+.video-surface__range:focus-visible::-moz-range-thumb {
+  opacity: 1;
+}
+
+.video-surface__time {
+  flex: 0 0 auto;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: rgb(var(--color-text-dim));
+  font-variant-numeric: tabular-nums;
+}
+
+.video-surface__time-sep {
+  opacity: 0.4;
+  margin-inline: 0.15em;
+}
+
+/* --- loading -------------------------------------------------------------- */
+
+.video-surface__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(1, 2, 3, 0.7);
+}
+
+.video-surface__loading span {
+  width: 1px;
+  height: 22px;
+  background: var(--accent);
+  animation: load-bars 1s var(--ease-in-out) infinite;
+}
+.video-surface__loading span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+.video-surface__loading span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes load-bars {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* --- pending / error ------------------------------------------------------ */
+
+.video-surface__placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  text-align: center;
+  background:
+    radial-gradient(120% 90% at 50% 45%, rgba(10, 24, 34, 0.85), rgba(1, 2, 4, 0.98));
+}
+
+.video-surface__placeholder-frame {
+  position: absolute;
+  inset: clamp(1rem, 3vw, 2.5rem);
+  pointer-events: none;
+}
+
+/* Registration corners — the only "technical" flourish in the pending state. */
+.video-surface__corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(var(--color-accent), 0.4);
+}
+.video-surface__corner--tl {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.video-surface__corner--tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.video-surface__corner--bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.video-surface__corner--br {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* A single slow scan line. Enough motion to say "waiting", not enough to
+   compete with the real footage it stands in for. */
+.video-surface__scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(var(--color-accent), 0.45),
+    transparent
+  );
+  animation: scan 4.2s var(--ease-in-out) infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.video-surface__placeholder-copy {
+  position: relative;
+  max-width: 44ch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.video-surface__placeholder-index {
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.video-surface__placeholder-title {
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.video-surface__placeholder-body {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: rgb(var(--color-text-dim));
+  text-wrap: pretty;
+}
+
+.video-surface__placeholder-body code {
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+}
+
+.video-surface__placeholder-hint {
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+}

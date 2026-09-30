@@ -1,0 +1,327 @@
+/* ==========================================================================
+   LAYOUT — the shell, the persistent canvas, the scroll track
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Reset
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: rgb(var(--color-text));
+  font-family: var(--font-display);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid rgba(var(--color-border), var(--color-border-alpha));
+  margin: 0;
+}
+
+::selection {
+  background: rgba(var(--color-accent), 0.28);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(var(--color-accent), 0.9);
+  outline-offset: 3px;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--color-border-strong), 0.45) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-border-strong), 0.4);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-border-strong), 0.65);
+}
+
+/* --------------------------------------------------------------------------
+   Tokens
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Type scale — display sizes are fluid, UI labels are fixed and tracked out. */
+  --fs-display-xl: clamp(3.25rem, 11vw, 10.5rem);
+  --fs-display-l: clamp(2.75rem, 8.2vw, 7.25rem);
+  --fs-display-m: clamp(2.25rem, 5.6vw, 4.75rem);
+  --fs-display-s: clamp(1.75rem, 3.6vw, 3rem);
+  --fs-body-l: clamp(1.05rem, 1.4vw, 1.35rem);
+  --fs-body: clamp(0.975rem, 1.05vw, 1.0625rem);
+  --fs-small: 0.8125rem;
+  --fs-label: 0.6875rem;
+
+  /* Spacing — a 4px base, but composed in large steps so the rhythm is visible. */
+  --gutter: clamp(1.25rem, 4vw, 5rem);
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6.5rem;
+  --space-7: 10rem;
+  --space-8: 15rem;
+
+  /* The two radii in the system. Everything else is square. */
+  --r-sm: 2px;
+  --r-md: 3px;
+
+  /* Hairlines. */
+  --line-faint: rgba(var(--color-border), 0.22);
+  --line: rgba(var(--color-border), 0.4);
+  --line-strong: rgba(var(--color-border-strong), 0.5);
+
+  /* Surfaces. */
+  --surface-1: rgba(10, 11, 15, 0.72);
+  --surface-2: rgba(16, 18, 24, 0.58);
+  --surface-3: rgba(24, 27, 34, 0.5);
+
+  --accent: rgb(var(--color-accent));
+  --accent-soft: rgba(var(--color-accent), 0.12);
+  --accent-line: rgba(var(--color-accent), 0.42);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --nav-h: 62px;
+  --max-w: 1560px;
+
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   App shell
+   -------------------------------------------------------------------------- */
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+.app--probing {
+  min-height: 100vh;
+  background: #000;
+}
+
+/* The canvas is fixed: it never scrolls, never reflows, and the story moves
+   over it. This is what makes the whole experience one continuous shot. */
+.app__canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app__canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  /* The hero and controller sections need to receive pointer events for the
+     orbit controls; the story sits above and is pointer-transparent there. */
+}
+
+.app__canvas--static {
+  background:
+    radial-gradient(120% 80% at 68% 34%, rgba(14, 58, 82, 0.55), transparent 62%),
+    radial-gradient(90% 60% at 20% 78%, rgba(10, 30, 46, 0.5), transparent 70%),
+    #010204;
+}
+
+.app__story {
+  position: relative;
+  z-index: 1;
+}
+
+/* The scroll track. The master timeline is bound to this element, and the
+   extra height is what gives the choreography room to breathe. */
+.app[data-phase='experience'] .app__story {
+  /* Nothing extra: section heights themselves provide the scroll length, and
+     each section declares its own. Kept as a hook for future tuning. */
+  --story-track: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Sections
+   -------------------------------------------------------------------------- */
+
+.section {
+  position: relative;
+  padding-block: clamp(6rem, 14vh, 12rem);
+  padding-inline: var(--gutter);
+}
+
+.section__inner {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+}
+
+/* The shared vertical hairline that runs down the left of the content column.
+   One continuous rule across the whole document is a quiet unifier. */
+.section__inner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--line-faint) 12%,
+    var(--line-faint) 88%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.section--hardware,
+.section--performance,
+.section--immersion,
+.section--control,
+.section--games,
+.section--discovery,
+.section--community,
+.section--finale {
+  /* The section owns the vertical rhythm; the canvas shows through. */
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Skip link
+   -------------------------------------------------------------------------- */
+
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  color: #000;
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+/* --------------------------------------------------------------------------
+   Utility
+   -------------------------------------------------------------------------- */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
