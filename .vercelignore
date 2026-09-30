@@ -1,0 +1,31 @@
+# Vercel upload filter.
+#
+# Explicit rather than relying on .gitignore: without this file the CLI uploaded
+# 167MB, pulling in the 120MB source asset tree and the locally built dist/ on
+# top of the 23MB the site actually needs.
+#
+# Two rules matter:
+#   - assets/ is excluded. It is a macOS-only input tree (prepare-assets.sh needs
+#     sips + cwebp, which have no Linux build) and must never be processed on
+#     Vercel's builders.
+#   - dist/ is excluded. Vercel runs the build itself from source; shipping our
+#     local output as well just doubles the upload.
+#
+# public/ is deliberately NOT excluded. public/assets/ holds the optimised FBX
+# meshes, the PBR maps and the intro sting — the pipeline cannot regenerate them
+# in CI, so this committed copy is the only one that reaches the deployment.
+# Ignoring it produces a build that succeeds and then loads no 3D at all.
+
+assets/
+dist/
+.vercel/output/
+node_modules/
+
+.git/
+.env
+.env.*
+*.log
+
+# Agent tooling, not part of the project
+.agents/
+skills-lock.json
