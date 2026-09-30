@@ -125,6 +125,21 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
   /* Video playback                                                          */
   /* ---------------------------------------------------------------------- */
 
+  /**
+   * Wire playback.
+   *
+   * The `<video>` is mounted from the very first render (see `renderVideo`
+   * below) rather than being gated on the phase, because an effect that reads
+   * a ref can only see an element that already exists. Gating the element on
+   * `phase === 'video'` and promoting the phase from here would mean the first
+   * pass always saw a null ref, bailed out, and never re-ran — its
+   * dependencies could not change, since the very act of bailing was what
+   * prevented them from changing. The sequence would then sit on true black
+   * indefinitely with nothing left to trigger a retry.
+   *
+   * The phase is instead promoted from `canplay`, which is both an accurate
+   * description of what is on screen and an event handler, not an effect body.
+   */
   useEffect(() => {
     if (videoFailed) {
       // No video: honour the reduced-motion path and boot straight to the
@@ -135,10 +150,10 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
   }, [videoFailed, bloomToScene]);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || videoFailed) return;
+    if (videoFailed) return;
 
-    setPhase('video');
+    const video = videoRef.current;
+    if (!video) return;
 
     // The site has no audio until the user asks for it, so the sting is muted
     // and unmuting is a deliberate, labelled action elsewhere in the UI.
@@ -153,18 +168,21 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
       bloomToScene();
     };
 
-    const onEnded = () => finish();
-    const onError = () => {
-      setVideoFailed(true);
-    };
-    const onCanPlay = () => {
+    const reveal = () => {
       // Kick the fade of the letterbox away so the sting plays on true black.
       gsap.fromTo(
         video,
         { opacity: 0, scale: 1.06 },
         { opacity: 1, scale: 1, duration: 0.8, ease: ease.out },
       );
+      setPhase('video');
     };
+
+    const onEnded = () => finish();
+    const onError = () => {
+      setVideoFailed(true);
+    };
+    const onCanPlay = () => reveal();
 
     // A video that never fires `ended` (autoplay blocked, decode stall) must
     // not trap the user on the boot screen. Cap it by wall clock.
@@ -173,6 +191,12 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
     video.addEventListener('ended', onEnded);
     video.addEventListener('error', onError);
     video.addEventListener('canplay', onCanPlay);
+
+    // `canplay` may already have fired before this effect ran — the element is
+    // mounted on first render and `preload="auto"` starts fetching immediately.
+    // Without this the sequence would stay on `dark` with the sting already
+    // decoded and playing, which is the same class of bug as above.
+    if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) reveal();
 
     const attempt = video.play();
     if (attempt && typeof attempt.catch === 'function') {
@@ -189,6 +213,9 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
       video.removeEventListener('error', onError);
       video.removeEventListener('canplay', onCanPlay);
     };
+    // `phase` is deliberately absent: the body never reads it, and `reveal`
+    // sets it. Depending on it here would tear down and re-wire playback — and
+    // restart the fade — each time the sequence moved forward.
   }, [videoFailed, bloomToScene]);
 
   /* ---------------------------------------------------------------------- */
@@ -215,6 +242,13 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
     return () => window.removeEventListener('pointermove', onMove);
   }, [phase]);
 
+  // Mounted from the first render, not gated on the phase, so the playback
+  // effect always has a real element to wire. Stays invisible until `canplay`
+  // fades it in, and unmounts with the sequence.
+  const renderVideo = !videoFailed && phase !== 'done';
+
+  // The slate is presentation, not plumbing: it may only appear once the sting
+  // is genuinely about to play.
   const showVideo = phase === 'video' && !videoFailed;
 
   return (
@@ -256,7 +290,7 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
 
       {/* 3. The supplied SIE intro sting. Scaled past the frame so it reads as
              a lens filling the screen, not as a media element. */}
-      {showVideo ? (
+      {renderVideo ? (
         <video
           ref={videoRef}
           className="boot__video"

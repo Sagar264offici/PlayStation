@@ -1,12 +1,34 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Group } from 'three';
-import { useFBX, useTexture } from '@react-three/drei';
+import { useTexture } from '@react-three/drei';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import type { ModelAsset } from '@/types';
 import { applyModelMaterials, configureMaps } from '@/three/materials/modelMaterials';
 import { stage } from '@/state/stage';
 import { clamp, damp } from '@/state/stage';
+
+/**
+ * The supplied FBX files carry Blender's texture *references* — filenames like
+ * `PS5_Console_Color.png` that were never published alongside the meshes. On
+ * load, FBXLoader dutifully resolves and requests every one of them relative to
+ * the model's own directory, which is eight guaranteed 404s per model that then
+ * sit in the console as noise.
+ *
+ * They are pure waste: `applyModelMaterials` replaces every mesh's material
+ * outright, so nothing the FBX bound survives. This manager answers those
+ * embedded image requests with a 1x1 transparent PNG instead of hitting the
+ * network. Real PBR maps are fetched separately through `useTexture`, which
+ * uses the default manager and is deliberately left untouched.
+ */
+const BLANK_TEXTURE =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
+const embeddedTextureManager = new THREE.LoadingManager();
+embeddedTextureManager.setURLModifier((url) =>
+  /\.(png|jpe?g|webp|tga|bmp)(\?|$)/i.test(url) ? BLANK_TEXTURE : url,
+);
 
 /**
  * Shared FBX loading + PBR material binding.
@@ -16,7 +38,13 @@ import { clamp, damp } from '@/state/stage';
  * object on a floor rather than guessing at offsets.
  */
 function useModel(asset: ModelAsset, onReady?: () => void) {
-  const fbx = useFBX(asset.src) as Group;
+  // drei's `useFBX` offers no hook to configure the loader, and the embedded
+  // references have to be intercepted before parsing, so this goes through
+  // `useLoader` directly with `three`'s own FBXLoader.
+  const fbx = useLoader(FBXLoader, asset.src, (loader) => {
+    // Read at parse time, so this must be set before `load()` runs.
+    loader.manager = embeddedTextureManager;
+  }) as Group;
 
   const kit = useTexture({
     color: asset.textures.color,

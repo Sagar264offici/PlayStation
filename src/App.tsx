@@ -86,6 +86,30 @@ function useLoadTracker() {
     ui.set({ loadProgress: mean });
   }, []);
 
+  /**
+   * Failsafe.
+   *
+   * Every phase above is driven by a callback from a resource we do not fully
+   * control, and two of them can simply never fire: a WebGL context that fails
+   * to create, or a model request that stalls without erroring. In that case
+   * `complete` stays false forever and the visitor is locked on the gate
+   * looking at a bar that will not move.
+   *
+   * Nothing here is worth locking anyone out of, so past a generous budget the
+   * gate opens regardless and the scene resolves in the background.
+   * `ModelBoundary` and the reduced-motion path already cover the degraded
+   * result, so forcing completion degrades rather than breaks.
+   */
+  useEffect(() => {
+    if (progress.complete) return;
+
+    const id = window.setTimeout(() => {
+      PHASE_KEYS.forEach((key) => mark(key, 1));
+    }, 20_000);
+
+    return () => window.clearTimeout(id);
+  }, [progress.complete, mark]);
+
   return { progress, mark };
 }
 

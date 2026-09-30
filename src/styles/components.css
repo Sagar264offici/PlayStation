@@ -994,6 +994,10 @@
   object-fit: cover;
   /* Just past 1 so the frame is always full-bleed, whatever the source aspect. */
   transform: scale(1.02);
+  /* The element is mounted from the first render so playback can be wired
+     immediately, which means it sits above the black veil before the sting is
+     decodable. Hidden by default; `canplay` fades it in over the darkness. */
+  opacity: 0;
   pointer-events: none;
 }
 
