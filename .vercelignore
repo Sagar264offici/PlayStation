@@ -15,10 +15,13 @@
 # meshes, the PBR maps and the intro sting — the pipeline cannot regenerate them
 # in CI, so this committed copy is the only one that reaches the deployment.
 # Ignoring it produces a build that succeeds and then loads no 3D at all.
-
-assets/
+#
+# The leading slash on the rule above is load-bearing for the same reason: an
+# unanchored "assets/" also matches "public/assets/", which silently stripped the
+# entire runtime payload from the upload.
+/assets/
 dist/
-.vercel/output/
+/.vercel/output/
 node_modules/
 
 .git/
